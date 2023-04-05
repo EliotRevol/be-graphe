@@ -49,11 +49,20 @@ public class Path {
 		}
 
 		List<Arc> arcs = new ArrayList<Arc>();
+
+		if (nodes.size() == 1) {
+			return new Path(graph, nodes.get(0));
+		}
+
+		if (nodes.size() == 0) {
+			return new Path(graph);
+		}
+
 		for (int i = 0; i < nodes.size() - 1; i++) {
 			double speed = 0;
 			Arc shortest = null;
 			for (Arc a : nodes.get(i).getSuccessors()) {
-				if (nodes.contains(a.getDestination()) && nodes.contains(a.getOrigin()))
+				if (nodes.contains(a.getDestination()) && nodes.contains(a.getOrigin()) && (!arcs.contains(a)))
 					if (a.getMinimumTravelTime() < speed || speed == 0) {
 						speed = a.getMinimumTravelTime();
 						shortest = a;
@@ -95,6 +104,15 @@ public class Path {
 		}
 
 		List<Arc> arcs = new ArrayList<Arc>();
+
+		if (nodes.size() == 1) {
+			return new Path(graph, nodes.get(0));
+		}
+
+		if (nodes.size() == 0) {
+			return new Path(graph);
+		}
+
 		for (int i = 0; i < nodes.size() - 1; i++) {
 			float length = 0;
 			Arc shortest = null;
