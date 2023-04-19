@@ -24,20 +24,21 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
 		BinaryHeap<Label> label_bin_heap = new BinaryHeap<>();
 		List<Arc> chemin = new ArrayList<>();
 
-		for (Node nodes : data.getGraph().getNodes()) {
-			label_list.add(null);
-		}
+		// for (Node nodes : data.getGraph().getNodes()) {
+		// label_list.add(null);
+		// }
 
 		for (Node nodes : data.getGraph().getNodes()) {
 			Label label = null;
 			if (nodes.getId() == data.getOrigin().getId()) {
 				label = new Label(nodes.getId(), true, 0, null);
+				label_bin_heap.insert(label);
+				notifyOriginProcessed(data.getOrigin());
 			} else {
 				label = new Label(nodes.getId(), false, Double.POSITIVE_INFINITY, null);
 			}
 
-			label_bin_heap.insert(label);
-			label_list.add(nodes.getId(), label);
+			label_list.add(label);
 		}
 
 		while (!label_bin_heap.isEmpty()
@@ -49,17 +50,19 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
 			}
 			node = data.getGraph().get(label_entree.getSommetCourant());
 			label_entree.setMarque(true);
+			notifyNodeMarked(node);
 			Node node_dest = null;
 			Label label = null;
 			Label current_label = label_entree;// label_list.get(node.getId());
 			double cout = 0;
 			for (Arc arc : node.getSuccessors()) {
 				node_dest = arc.getDestination();
+				notifyNodeReached(node_dest);
 				label = label_list.get(node_dest.getId());
 				cout = current_label.getCoutRealise() + data.getCost(arc);
 				if (label.getCoutRealise() == -1 || label.getCoutRealise() > cout) {
 					try {
-						label_bin_heap.remove(label);
+						// label_bin_heap.remove(label);
 						label_bin_heap.insert(label);
 						label.setCoutRealise(cout);
 						label.setPere(arc);
@@ -74,6 +77,7 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
 		List<Arc> chemin_final = new ArrayList<>();
 		chemin.add(label_entree.getPere());
 		Arc arc = label_entree.getPere();
+		notifyDestinationReached(arc.getDestination());
 		while (arc != null) {
 			System.out.println(arc);
 			chemin_final.add(0, arc);
