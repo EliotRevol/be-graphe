@@ -8,7 +8,7 @@ public class Label implements Comparable<Label> {
 	private double coutRealise;
 	private Arc pere;
 
-	public Label(int sommet, boolean marque, int coutRealise, Arc pere) {
+	public Label(int sommet, boolean marque, double coutRealise, Arc pere) {
 		this.sommetCourant = sommet;
 		this.marque = marque;
 		this.coutRealise = coutRealise;
@@ -40,7 +40,7 @@ public class Label implements Comparable<Label> {
 	}
 
 	public int compareTo(Label label) {
-		return Integer.compare(this.sommetCourant, label.getSommetCourant());
+		return Double.compare(this.getCoutRealise(), label.getCoutRealise());
 	}
 
 	public void setPere(Arc val) {
