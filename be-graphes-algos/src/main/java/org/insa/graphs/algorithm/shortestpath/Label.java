@@ -35,12 +35,16 @@ public class Label implements Comparable<Label> {
 		this.coutRealise = val;
 	}
 
+	public double getTotalCost() {
+		return this.getCoutRealise();
+	}
+
 	public Arc getPere() {
 		return this.pere;
 	}
 
 	public int compareTo(Label label) {
-		return Double.compare(this.getCoutRealise(), label.getCoutRealise());
+		return Double.compare(this.getTotalCost(), label.getTotalCost());
 	}
 
 	public void setPere(Arc val) {
