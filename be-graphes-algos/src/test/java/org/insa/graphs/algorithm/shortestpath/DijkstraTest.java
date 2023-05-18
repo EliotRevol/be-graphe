@@ -11,7 +11,6 @@ import org.insa.graphs.model.io.GraphReader;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -24,6 +23,7 @@ public class DijkstraTest {
 	private static ShortestPathSolution bellman2;
 	private static ShortestPathSolution dijkstra2;
 	private static ShortestPathSolution dijkstra3;
+	private static ShortestPathSolution dijkstra4;
 
 	@BeforeClass
 	public static void initAll() throws Exception {
@@ -78,6 +78,19 @@ public class DijkstraTest {
 				new ShortestPathData(graph, origine, destination, ArcInspectorFactory.getAllFilters().get(0)));
 		dijkstra3 = dijkstra_algo3.doRun();
 
+		// Test sur Toulouse un noeud
+		mapName = "/mnt/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Maps/toulouse.mapgr";
+		mapReader = new BinaryGraphReader(
+				new DataInputStream(new BufferedInputStream(new FileInputStream(mapName))));
+		graph = mapReader.read();
+
+		origine = graph.getNodes().get(10);
+		// destination = graph.getNodes().get(100);
+
+		final DijkstraAlgorithm dijkstra_algo4 = new DijkstraAlgorithm(
+				new ShortestPathData(graph, origine, origine, ArcInspectorFactory.getAllFilters().get(0)));
+		dijkstra4 = dijkstra_algo4.doRun();
+
 	}
 
 	@Test
@@ -92,11 +105,9 @@ public class DijkstraTest {
 		assertFalse(dijkstra3.isFeasible());
 	}
 
-	/*
-	 * @Test
-	 * public void testOneNodePath() {
-	 * assertEquals(null, dijkPath_unnoeud.getPath().getLength(), 0, 0);
-	 * }
-	 */
+	@Test
+	public void testOneNodePath() {
+		assertEquals(null, dijkstra4.getPath().getLength(), 0, 0);
+	}
 
 }

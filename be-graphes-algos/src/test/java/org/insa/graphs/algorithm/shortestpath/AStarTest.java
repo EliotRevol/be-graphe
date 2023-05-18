@@ -19,180 +19,96 @@ import org.insa.graphs.algorithm.ArcInspectorFactory;
 
 public class AStarTest {
 
-	/* --- --- --- Variables pour tests JUnit --- --- --- */
-	// trajet court n°1
-	private static ShortestPathSolution bellPath_crt1;
-	private static ShortestPathSolution aStarPath_crt1;
-	// private static ShortestPathSolution dijkPath_crt1; // pour le test de
-	// SolvingTime
-	// trajet court n°2
-	private static ShortestPathSolution bellPath_crt2;
-	private static ShortestPathSolution aStarPath_crt2;
-	// private static ShortestPathSolution dijkPath_crt2; // pour le test de
-	// SolvingTime
-
-	// trajet long n°1 -- longueur --> on va comparer leurs temps et longueurs
-	// respectifs pour vérifier que les algorithmes sont cohérents
-	// private static ShortestPathSolution aStarPath_lglg1;
-	// trajet long n°1 -- temps
-	// private static ShortestPathSolution aStarPath_lgtps1;
-	// trajet long n°2 -- longueur
-	private static ShortestPathSolution aStarPath_lglg2;
-	// private static ShortestPathSolution dijkPath_lglg2; // pour le test de
-	// SolvingTime
-	// trajet long n°2 -- temps
-	private static ShortestPathSolution aStarPath_lgtps2;
-	// private static ShortestPathSolution dijkPath_lgtps2; // pour le test de
-	// SolvingTime
-
-	// impossible de rejoindre la destination
-	private static ShortestPathSolution aStarPath_infaisable;
-
-	// destination == origine
-	private static ShortestPathSolution aStarPath_unnoeud;
+	private static ShortestPathSolution bellman1;
+	private static ShortestPathSolution astar1;
+	private static ShortestPathSolution bellman2;
+	private static ShortestPathSolution astar2;
+	private static ShortestPathSolution astar3;
+	private static ShortestPathSolution astar4;
 
 	@BeforeClass
 	public static void initAll() throws Exception {
-		// trajets courts avec chemins trouvés par Bellman-Ford
-		// Carte Carré ("Square") -- On prend deux points à l'opposé l'un de l'autre
-		final String mapName_crt1 = "/mnt/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Maps/carre.mapgr";
-		final GraphReader reader_crt1 = new BinaryGraphReader(
-				new DataInputStream(new BufferedInputStream(new FileInputStream(mapName_crt1))));
-		final Graph graph_crt1 = reader_crt1.read();
 
-		Node orig_crt1 = graph_crt1.getNodes().get(9);
-		Node dest_crt1 = graph_crt1.getNodes().get(10);
+		// Test sur carré dense
+		String mapName = "/mnt/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Maps/carre-dense.mapgr";
+		GraphReader mapReader = new BinaryGraphReader(
+				new DataInputStream(new BufferedInputStream(new FileInputStream(mapName))));
+		Graph graph = mapReader.read();
 
-		final BellmanFordAlgorithm bellAlgo_crt1 = new BellmanFordAlgorithm(
-				new ShortestPathData(graph_crt1, orig_crt1, dest_crt1, ArcInspectorFactory.getAllFilters().get(0)));
-		bellPath_crt1 = bellAlgo_crt1.doRun();
-		final AStarAlgorithm aStarAlgo_crt1 = new AStarAlgorithm(
-				new ShortestPathData(graph_crt1, orig_crt1, dest_crt1, ArcInspectorFactory.getAllFilters().get(0)));
-		aStarPath_crt1 = aStarAlgo_crt1.doRun();
-		// final DijkstraAlgorithm dijkAlgo_crt1 = new DijkstraAlgorithm(new
-		// ShortestPathData(graph_crt1, orig_crt1, dest_crt1,
-		// ArcInspectorFactory.getAllFilters().get(0)));
-		// dijkPath_crt1 = dijkAlgo_crt1.doRun();
+		Node origine = graph.getNodes().get(141193);
+		Node destination = graph.getNodes().get(253346);
 
-		// Carte de l'Insa -- On prend un point à l'extrimité nord de la carte et un
-		// autre à l'extrémité sud
-		final String mapName_crt2 = "/mnt/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Maps/insa.mapgr";
-		final GraphReader reader_crt2 = new BinaryGraphReader(
-				new DataInputStream(new BufferedInputStream(new FileInputStream(mapName_crt2))));
-		final Graph graph_crt2 = reader_crt2.read();
-		Node orig_crt2 = graph_crt2.getNodes().get(241);
-		Node dest_crt2 = graph_crt2.getNodes().get(332);
-		final BellmanFordAlgorithm bellAlgo_crt2 = new BellmanFordAlgorithm(
-				new ShortestPathData(graph_crt2, orig_crt2, dest_crt2, ArcInspectorFactory.getAllFilters().get(0)));
-		bellPath_crt2 = bellAlgo_crt2.doRun();
-		final AStarAlgorithm aStarAlgo_crt2 = new AStarAlgorithm(
-				new ShortestPathData(graph_crt2, orig_crt2, dest_crt2, ArcInspectorFactory.getAllFilters().get(0)));
-		aStarPath_crt2 = aStarAlgo_crt2.doRun();
-		// final DijkstraAlgorithm dijkAlgo_crt2 = new DijkstraAlgorithm(new
-		// ShortestPathData(graph_crt2, orig_crt2, dest_crt2,
-		// ArcInspectorFactory.getAllFilters().get(0)));
-		// dijkPath_crt2 = dijkAlgo_crt2.doRun();
+		BellmanFordAlgorithm bellman_algo1 = new BellmanFordAlgorithm(
+				new ShortestPathData(graph, origine, destination,
+						ArcInspectorFactory.getAllFilters().get(0)));
+		bellman1 = bellman_algo1.doRun();
 
-		// trajets longs
-		// Carte de la France --
-		/*
-		 * final String mapName_lg1 =
-		 * "/mnt/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Maps/france.mapgr";
-		 * final GraphReader reader_lg1 = new BinaryGraphReader(new DataInputStream(new
-		 * BufferedInputStream(new FileInputStream(mapName_lg1))));
-		 * final Graph graph_lg1 = reader_lg1.read();
-		 * Node orig_lg1 = graph_lg1.getNodes().get(241); Node dest_lg1 =
-		 * graph_lg1.getNodes().get(332); //!\\ Pas les bons points
-		 * // Parcours en temps (uniquement voiture)
-		 * final aStarstraAlgorithm aStarAlgo_lgtps1 = new aStarstraAlgorithm(new
-		 * ShortestPathData(graph_lg1, orig_lg1, dest_lg1,
-		 * ArcInspectorFactory.getAllFilters().get(2)));
-		 * aStarPath_lgtps1 = aStarAlgo_lgtps1.doRun();
-		 * // Parcours en longueur (uniquement voiture)
-		 * final aStarstraAlgorithm aStarAlgo_lglg1 = new aStarstraAlgorithm(new
-		 * ShortestPathData(graph_lg1, orig_lg1, dest_lg1,
-		 * ArcInspectorFactory.getAllFilters().get(1)));
-		 * aStarPath_lglg1 = aStarAlgo_lglg1.doRun();
-		 */
-		// Carte de la Belgique -- d'est en ouest
-		final String mapName_lg2 = "/mnt/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Maps/belgium.mapgr";
-		final GraphReader reader_lg2 = new BinaryGraphReader(
-				new DataInputStream(new BufferedInputStream(new FileInputStream(mapName_lg2))));
-		final Graph graph_lg2 = reader_lg2.read();
-		Node orig_lg2 = graph_lg2.getNodes().get(597909);
-		Node dest_lg2 = graph_lg2.getNodes().get(89011);
-		// Parcours en temps (uniquement voiture)
-		final AStarAlgorithm aStarAlgo_lgtps2 = new AStarAlgorithm(
-				new ShortestPathData(graph_lg2, orig_lg2, dest_lg2, ArcInspectorFactory.getAllFilters().get(2)));
-		aStarPath_lgtps2 = aStarAlgo_lgtps2.doRun();
-		// final DijkstraAlgorithm dijkAlgo_lgtps2 = new DijkstraAlgorithm(new
-		// ShortestPathData(graph_lg2, orig_lg2, dest_lg2,
-		// ArcInspectorFactory.getAllFilters().get(2)));
-		// dijkPath_lgtps2 = dijkAlgo_lgtps2.doRun();
-		// Parcours en longueur (uniquement voiture)
-		final AStarAlgorithm aStarAlgo_lglg2 = new AStarAlgorithm(
-				new ShortestPathData(graph_lg2, orig_lg2, dest_lg2, ArcInspectorFactory.getAllFilters().get(1)));
-		aStarPath_lglg2 = aStarAlgo_lglg2.doRun();
-		// final DijkstraAlgorithm dijkAlgo_lglg2 = new DijkstraAlgorithm(new
-		// ShortestPathData(graph_lg2, orig_lg2, dest_lg2,
-		// ArcInspectorFactory.getAllFilters().get(1)));
-		// dijkPath_lglg2 = dijkAlgo_lglg2.doRun();
+		AStarAlgorithm astar_algo1 = new AStarAlgorithm(
+				new ShortestPathData(graph, origine, destination,
+						ArcInspectorFactory.getAllFilters().get(0)));
+		astar1 = astar_algo1.doRun();
 
-		// destination == origine
-		final AStarAlgorithm aStarAlgo_unnoeud = new AStarAlgorithm(
-				new ShortestPathData(graph_crt1, orig_crt1, orig_crt1, ArcInspectorFactory.getAllFilters().get(0)));
-		aStarPath_unnoeud = aStarAlgo_unnoeud.doRun();
+		// Test sur Toulouse
+		mapName = "/mnt/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Maps/toulouse.mapgr";
+		mapReader = new BinaryGraphReader(
+				new DataInputStream(new BufferedInputStream(new FileInputStream(mapName))));
+		graph = mapReader.read();
 
-		// impossible de relier destination et origine
-		Node orig_impo = graph_crt2.getNodes().get(1282);
-		Node dest_impo = graph_crt2.getNodes().get(864);
-		final AStarAlgorithm aStarAlgo_impo = new AStarAlgorithm(
-				new ShortestPathData(graph_crt2, orig_impo, dest_impo, ArcInspectorFactory.getAllFilters().get(0)));
-		aStarPath_infaisable = aStarAlgo_impo.doRun();
+		origine = graph.getNodes().get(10);
+		destination = graph.getNodes().get(100);
+
+		BellmanFordAlgorithm bellman_algo2 = new BellmanFordAlgorithm(
+				new ShortestPathData(graph, origine, destination,
+						ArcInspectorFactory.getAllFilters().get(0)));
+		bellman2 = bellman_algo2.doRun();
+
+		final AStarAlgorithm astar_algo2 = new AStarAlgorithm(
+				new ShortestPathData(graph, origine, destination, ArcInspectorFactory.getAllFilters().get(0)));
+		astar2 = astar_algo2.doRun();
+
+		// Test sur la Bretagne (chemin impossible)
+		mapName = "/mnt/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Maps/bretagne.mapgr";
+		mapReader = new BinaryGraphReader(
+				new DataInputStream(new BufferedInputStream(new FileInputStream(mapName))));
+		graph = mapReader.read();
+
+		origine = graph.getNodes().get(371889);
+		destination = graph.getNodes().get(130029);
+
+		AStarAlgorithm astar_algo3 = new AStarAlgorithm(
+				new ShortestPathData(graph, origine, destination, ArcInspectorFactory.getAllFilters().get(0)));
+		astar3 = astar_algo3.doRun();
+
+		// Test sur Toulouse un noeud
+		mapName = "/mnt/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Maps/toulouse.mapgr";
+		mapReader = new BinaryGraphReader(
+				new DataInputStream(new BufferedInputStream(new FileInputStream(mapName))));
+		graph = mapReader.read();
+
+		origine = graph.getNodes().get(10);
+		// destination = graph.getNodes().get(100);
+
+		final AStarAlgorithm astar_algo4 = new AStarAlgorithm(
+				new ShortestPathData(graph, origine, origine, ArcInspectorFactory.getAllFilters().get(0)));
+		astar4 = astar_algo4.doRun();
+
 	}
-	/* --- --- FIN INITALL --- --- --- */
 
-	/* --- --- --- ___Tests JUnit___ --- --- --- */
 	@Test
 	public void testShortPath() {
-		assertEquals(null, bellPath_crt1.getPath().getLength(), aStarPath_crt1.getPath().getLength(), 0);
-		assertEquals(null, bellPath_crt2.getPath().getLength(), aStarPath_crt2.getPath().getLength(), 0);
+		assertEquals(null, bellman1.getPath().getLength(), astar1.getPath().getLength(), 0);
+		assertEquals(null, bellman2.getPath().getLength(), astar2.getPath().getLength(), 0);
+
 	}
 
 	@Test
-	public void testLongPath() { // On teste la cohérence des résultats entre eux, pas s'il s'agit effectivement
-																// des trajets les plus courts / rapides existants
-		// assertTrue(aStarPath_lglg1.getPath().getLength() <=
-		// aStarPath_lgtps1.getPath().getLength());
-		assertTrue(aStarPath_lglg2.getPath().getLength() <= aStarPath_lgtps2.getPath().getLength());
-		// assertTrue(aStarPath_lglg1.getPath().getMinimumTravelTime() >=
-		// aStarPath_lgtps1.getPath().getMinimumTravelTime());
-		assertTrue(aStarPath_lglg2.getPath().getMinimumTravelTime() >= aStarPath_lgtps2.getPath().getMinimumTravelTime());
+	public void testImpossiblePath() {
+		assertFalse(astar3.isFeasible());
 	}
 
 	@Test
 	public void testOneNodePath() {
-		assertEquals(null, aStarPath_unnoeud.getPath().getLength(), 0, 0);
+		assertEquals(null, astar4.getPath().getLength(), 0, 0);
 	}
 
-	@Test
-	public void testInfeasiblePath() {
-		assertFalse(aStarPath_infaisable.isFeasible());
-	}
-
-	/*
-	 * @Test
-	 * public void testSolvingTime (){
-	 * System.out.println(bellPath_crt1.getSolvingTime());
-	 * assertTrue(aStarPath_crt1.getSolvingTime().compareTo(dijkPath_crt1.
-	 * getSolvingTime()) == 0);
-	 * assertTrue(aStarPath_crt2.getSolvingTime().compareTo(dijkPath_crt2.
-	 * getSolvingTime()) == 0);
-	 * assertTrue(aStarPath_lglg2.getSolvingTime().compareTo(dijkPath_lglg2.
-	 * getSolvingTime()) == 0);
-	 * assertTrue(aStarPath_lgtps2.getSolvingTime().compareTo(dijkPath_lgtps2.
-	 * getSolvingTime()) == 0);
-	 * }
-	 */
-	/* --- --- --- --- --- --- --- --- --- --- */
 }

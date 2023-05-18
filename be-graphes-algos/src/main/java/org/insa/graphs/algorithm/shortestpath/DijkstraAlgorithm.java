@@ -27,6 +27,10 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
 		// for (Node nodes : data.getGraph().getNodes()) {
 		// label_list.add(null);
 		// }
+		if (data.getOrigin().getId() == data.getDestination().getId()) {
+			List<Arc> chemin_final = new ArrayList<>();
+			return new ShortestPathSolution(data, Status.OPTIMAL, new Path(data.getGraph(), chemin_final));
+		}
 
 		for (Node nodes : data.getGraph().getNodes()) {
 			Label label = null;
@@ -46,7 +50,7 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
 						.getId())) {
 			Label label_entree = label_bin_heap.deleteMin();
 			if (label_entree.getCoutRealise() != 0) {
-				System.out.println(label_entree.getCoutRealise());
+				// System.out.println(label_entree.getCoutRealise());
 				chemin.add(label_entree.getPere());
 			}
 			node = data.getGraph().get(label_entree.getSommetCourant());
@@ -83,7 +87,7 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
 			Arc arc = label_entree.getPere();
 			notifyDestinationReached(arc.getDestination());
 			while (arc != null) {
-				System.out.println(arc);
+				// System.out.println(arc);
 				chemin_final.add(0, arc);
 				arc = label_list.get(arc.getOrigin().getId()).getPere();
 			}
