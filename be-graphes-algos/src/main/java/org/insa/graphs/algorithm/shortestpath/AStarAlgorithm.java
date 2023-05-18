@@ -75,6 +75,9 @@ public class AStarAlgorithm extends DijkstraAlgorithm {
 			}
 		}
 
+		if (label_bin_heap.isEmpty()) {
+			return new ShortestPathSolution(data, Status.INFEASIBLE);
+		}
 		Label label_entree = label_bin_heap.deleteMin();
 		List<Arc> chemin_final = new ArrayList<>();
 		chemin.add(label_entree.getPere());

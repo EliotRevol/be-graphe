@@ -41,8 +41,9 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
 			label_list.add(label);
 		}
 
-		while (!label_bin_heap.isEmpty()
-				&& data.getGraph().get(label_bin_heap.findMin().getSommetCourant()).getId() != data.getDestination().getId()) {
+		while ((!label_bin_heap.isEmpty())
+				&& (data.getGraph().get(label_bin_heap.findMin().getSommetCourant()).getId() != data.getDestination()
+						.getId())) {
 			Label label_entree = label_bin_heap.deleteMin();
 			if (label_entree.getCoutRealise() != 0) {
 				System.out.println(label_entree.getCoutRealise());
@@ -73,18 +74,22 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
 			}
 		}
 
-		Label label_entree = label_bin_heap.deleteMin();
-		List<Arc> chemin_final = new ArrayList<>();
-		chemin.add(label_entree.getPere());
-		Arc arc = label_entree.getPere();
-		notifyDestinationReached(arc.getDestination());
-		while (arc != null) {
-			System.out.println(arc);
-			chemin_final.add(0, arc);
-			arc = label_list.get(arc.getOrigin().getId()).getPere();
-		}
+		if (label_bin_heap.isEmpty()) {
+			return new ShortestPathSolution(data, Status.INFEASIBLE);
+		} else {
+			Label label_entree = label_bin_heap.deleteMin();
+			List<Arc> chemin_final = new ArrayList<>();
+			chemin.add(label_entree.getPere());
+			Arc arc = label_entree.getPere();
+			notifyDestinationReached(arc.getDestination());
+			while (arc != null) {
+				System.out.println(arc);
+				chemin_final.add(0, arc);
+				arc = label_list.get(arc.getOrigin().getId()).getPere();
+			}
 
-		return new ShortestPathSolution(data, Status.OPTIMAL, new Path(data.getGraph(), chemin_final));
+			return new ShortestPathSolution(data, Status.OPTIMAL, new Path(data.getGraph(), chemin_final));
+		}
 
 	}
 
