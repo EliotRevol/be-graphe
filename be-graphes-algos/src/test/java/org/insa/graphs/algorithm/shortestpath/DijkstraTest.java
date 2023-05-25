@@ -11,6 +11,7 @@ import org.insa.graphs.model.io.GraphReader;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -24,6 +25,8 @@ public class DijkstraTest {
 	private static ShortestPathSolution dijkstra2;
 	private static ShortestPathSolution dijkstra3;
 	private static ShortestPathSolution dijkstra4;
+	private static ShortestPathSolution dijkstra5_temps;
+	private static ShortestPathSolution dijkstra5_longueur;
 
 	@BeforeClass
 	public static void initAll() throws Exception {
@@ -87,9 +90,21 @@ public class DijkstraTest {
 		origine = graph.getNodes().get(10);
 		// destination = graph.getNodes().get(100);
 
-		final DijkstraAlgorithm dijkstra_algo4 = new DijkstraAlgorithm(
+		DijkstraAlgorithm dijkstra_algo4 = new DijkstraAlgorithm(
 				new ShortestPathData(graph, origine, origine, ArcInspectorFactory.getAllFilters().get(0)));
 		dijkstra4 = dijkstra_algo4.doRun();
+
+		// Test sur un long chemin (bellman ford ne marche pas sur ce type de chemin)
+		mapName = "/mnt/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Maps/belgium.mapgr";
+        mapReader = new BinaryGraphReader(new DataInputStream(new BufferedInputStream(new FileInputStream(mapName))));
+        graph = mapReader.read();
+
+        Node orig_lg2 = graph.getNodes().get(597909); Node dest_lg2 = graph.getNodes().get(536278); //!\\ Pas les bons points 
+		DijkstraAlgorithm dijkstra_algo5 = new DijkstraAlgorithm(new ShortestPathData(graph, orig_lg2, dest_lg2, ArcInspectorFactory.getAllFilters().get(2)));
+		dijkstra5_temps= dijkstra_algo5.doRun();
+		DijkstraAlgorithm dijkstra_algo6 = new DijkstraAlgorithm(new ShortestPathData(graph, orig_lg2, dest_lg2, ArcInspectorFactory.getAllFilters().get(1)));
+		dijkstra5_longueur = dijkstra_algo6.doRun();
+
 
 	}
 
@@ -99,6 +114,12 @@ public class DijkstraTest {
 		assertEquals(null, bellman2.getPath().getLength(), dijkstra2.getPath().getLength(), 0);
 
 	}
+
+	@Test 
+    public void testLongPath (){ 
+        assertTrue(dijkstra5_longueur.getPath().getLength() <= dijkstra5_temps.getPath().getLength());
+        assertTrue(dijkstra5_temps.getPath().getMinimumTravelTime() <= dijkstra5_longueur.getPath().getMinimumTravelTime());
+    } 
 
 	@Test
 	public void testImpossiblePath() {
