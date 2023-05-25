@@ -25,6 +25,8 @@ public class AStarTest {
 	private static ShortestPathSolution astar2;
 	private static ShortestPathSolution astar3;
 	private static ShortestPathSolution astar4;
+	private static ShortestPathSolution astar5_temps;
+	private static ShortestPathSolution astar5_longueur;
 
 	@BeforeClass
 	public static void initAll() throws Exception {
@@ -35,8 +37,8 @@ public class AStarTest {
 				new DataInputStream(new BufferedInputStream(new FileInputStream(mapName))));
 		Graph graph = mapReader.read();
 
-		Node origine = graph.getNodes().get(141193);
-		Node destination = graph.getNodes().get(253346);
+		Node origine = graph.getNodes().get(107423);
+		Node destination = graph.getNodes().get(271965);
 
 		BellmanFordAlgorithm bellman_algo1 = new BellmanFordAlgorithm(
 				new ShortestPathData(graph, origine, destination,
@@ -88,9 +90,23 @@ public class AStarTest {
 		origine = graph.getNodes().get(10);
 		// destination = graph.getNodes().get(100);
 
-		final AStarAlgorithm astar_algo4 = new AStarAlgorithm(
+		AStarAlgorithm astar_algo4 = new AStarAlgorithm(
 				new ShortestPathData(graph, origine, origine, ArcInspectorFactory.getAllFilters().get(0)));
 		astar4 = astar_algo4.doRun();
+
+		// Test sur un long chemin (bellman ford ne marche pas sur ce type de chemin)
+		mapName = "/mnt/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Maps/belgium.mapgr";
+		mapReader = new BinaryGraphReader(new DataInputStream(new BufferedInputStream(new FileInputStream(mapName))));
+		graph = mapReader.read();
+
+		origine = graph.getNodes().get(868516);
+		destination = graph.getNodes().get(314139); // !\\ Pas les bons points
+		AStarAlgorithm astar5_algo5 = new AStarAlgorithm(
+				new ShortestPathData(graph, origine, destination, ArcInspectorFactory.getAllFilters().get(2)));
+		astar5_temps = astar5_algo5.doRun();
+		AStarAlgorithm astar5_algo6 = new AStarAlgorithm(
+				new ShortestPathData(graph, origine, destination, ArcInspectorFactory.getAllFilters().get(1)));
+		astar5_longueur = astar5_algo6.doRun();
 
 	}
 
@@ -109,6 +125,11 @@ public class AStarTest {
 	@Test
 	public void testOneNodePath() {
 		assertEquals(null, astar4.getPath().getLength(), 0, 0);
+	}
+
+	@Test
+	public void testLongPath() {
+		assertTrue(astar5_longueur.getPath().getLength() <= astar5_temps.getPath().getLength());
 	}
 
 }
